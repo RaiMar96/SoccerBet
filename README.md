@@ -49,5 +49,11 @@ Prima di avviare l'applicazione assicurarsi che le porte 8080 , 9090 e 27017 sia
 
 - Avviare un'istanza di MongoDB sulla propria Macchina
 - Compilare e lanciare il RestServer ( aggiungere alle direttive di compilazione in Visual Studio la seguente macro **_CRT_SECURE_NO_WARNINGS** )
-- Lanciare lo **StatsServer**
-- Lanciare il **Client**
+- Lanciare lo **StatsServer**, digitando il seguente comando da terminale all'interno della directory del progetto
+```[shell]
+Rscript .\src\Stats_Server\StatsServer.R
+```
+- Lanciare il **Client**, digitando il seguente comando da terminale all'interno della directory src\Client\
+```[shell]
+python .\SoccerBet.py
+```

@@ -22,14 +22,9 @@ Nardo Gabriele Salvatore O55000430
 using std::chrono::system_clock;
 using namespace restinio;
 
+
 // custom include 
 #include "DBController.h"
-
-template<typename T>
-std::ostream& operator<<(std::ostream& to, const optional_t<T>& v) {
-	if (v) to << *v;
-	return to;
-}
 
 auto on_request(const restinio::request_handle_t& req) {
     using namespace restinio::http_field_parsers::bearer_auth;
@@ -44,7 +39,7 @@ auto on_request(const restinio::request_handle_t& req) {
             verifier.verify(decoded);
             return true;
         }
-        catch (const jwt::token_verification_exception& e) {
+        catch (const jwt::token_verification_exception) {
             return false;
         }
     }
@@ -200,16 +195,16 @@ int main(void) {
                             .done();
                     }
                     else {
-                        Logger("ServerLogger.txt", "POST /register 417");
-                        return req->create_response(restinio::status_expectation_failed())
+                        Logger("ServerLogger.txt", "POST /register 500");
+                        return req->create_response(restinio::status_internal_server_error())
                             .append_header(restinio::http_field::content_type, "text/plain; charset=utf-8")
                             .set_body("Error: User not inserted!!")
                             .done();
                     }
                 }
                 else {
-                    Logger("ServerLogger.txt", "POST /register 417");
-                    return req->create_response(restinio::status_expectation_failed())
+                    Logger("ServerLogger.txt", "POST /register 500");
+                    return req->create_response(restinio::status_internal_server_error())
                         .append_header(restinio::http_field::content_type, "text/plain; charset=utf-8")
                         .set_body("Registration failed: this user already exist!!")
                         .done();
@@ -243,8 +238,8 @@ int main(void) {
                             .done();
                     }
                     else {
-                        Logger("ServerLogger.txt", "PUT /user/:id 417");
-                        return req->create_response(restinio::status_expectation_failed())
+                        Logger("ServerLogger.txt", "PUT /user/:id 500");
+                        return req->create_response(restinio::status_internal_server_error())
                             .append_header(restinio::http_field::content_type, "text/plain; charset=utf-8")
                             .set_body("Error: User not updated!!")
                             .done();
@@ -277,8 +272,8 @@ int main(void) {
                             .done();
                     }
                     else {
-                        Logger("ServerLogger.txt", "DELETE /user/:id 417");
-                        return req->create_response(restinio::status_expectation_failed())
+                        Logger("ServerLogger.txt", "DELETE /user/:id 500");
+                        return req->create_response(restinio::status_internal_server_error())
                             .append_header(restinio::http_field::content_type, "text/plain; charset=utf-8")
                             .set_body("Error: User not deleted!!")
                             .done();
@@ -313,8 +308,8 @@ int main(void) {
                             .done();
                     }
                     else {
-                        Logger("ServerLogger.txt", "PUT /user/balance/:id 417");
-                        return req->create_response(restinio::status_expectation_failed())
+                        Logger("ServerLogger.txt", "PUT /user/balance/:id 500");
+                        return req->create_response(restinio::status_internal_server_error())
                             .append_header(restinio::http_field::content_type, "text/plain; charset=utf-8")
                             .set_body("Error: balance not updated!!")
                             .done();
@@ -427,8 +422,8 @@ int main(void) {
                             .done();
                     }
                     else {
-                        Logger("ServerLogger.txt", "POST /event 417");
-                        return req->create_response(restinio::status_expectation_failed())
+                        Logger("ServerLogger.txt", "POST /event 500");
+                        return req->create_response(restinio::status_internal_server_error())
                             .append_header(restinio::http_field::content_type, "text/plain; charset=utf-8")
                             .set_body("Error: Event not inserted!!")
                             .done();
@@ -481,8 +476,8 @@ int main(void) {
                             .done();
                     }
                     else {
-                        Logger("ServerLogger.txt", "PUT /event/:id 417");
-                        return req->create_response(restinio::status_expectation_failed())
+                        Logger("ServerLogger.txt", "PUT /event/:id 500");
+                        return req->create_response(restinio::status_internal_server_error())
                             .append_header(restinio::http_field::content_type, "text/plain; charset=utf-8")
                             .set_body("Error: Event not updated!!")
                             .done();
@@ -516,8 +511,8 @@ int main(void) {
                             .done();
                     }
                     else {
-                        Logger("ServerLogger.txt", "Delete /event/:id 417");
-                        return req->create_response(restinio::status_expectation_failed())
+                        Logger("ServerLogger.txt", "Delete /event/:id 500");
+                        return req->create_response(restinio::status_internal_server_error())
                             .append_header(restinio::http_field::content_type, "text/plain; charset=utf-8")
                             .set_body("Error: Event not deleted!!")
                             .done();
@@ -662,8 +657,8 @@ int main(void) {
                         // InsertBetOperation insert the bet and update the user balance
                         if (validation_flag) result = ctrl.InsertBetOperation(bet);
                         else {
-                            Logger("ServerLogger.txt", "POST /bet 417");
-                            return req->create_response(restinio::status_expectation_failed())
+                            Logger("ServerLogger.txt", "POST /bet 500");
+                            return req->create_response(restinio::status_internal_server_error())
                                 .append_header(restinio::http_field::content_type, "text/plain; charset=utf-8")
                                 .set_body("Error: One or more event already started!!")
                                 .done();
@@ -677,16 +672,16 @@ int main(void) {
                                 .done();
                         }
                         else {
-                            Logger("ServerLogger.txt", "POST /bet 417");
-                            return req->create_response(restinio::status_expectation_failed())
+                            Logger("ServerLogger.txt", "POST /bet 500");
+                            return req->create_response(restinio::status_internal_server_error())
                                 .append_header(restinio::http_field::content_type, "text/plain; charset=utf-8")
                                 .set_body("Error: Bet not inserted!!")
                                 .done();
                         }
                     }
                     else {
-                        Logger("ServerLogger.txt", "POST /bet 417");
-                        return req->create_response(restinio::status_expectation_failed())
+                        Logger("ServerLogger.txt", "POST /bet 500");
+                        return req->create_response(restinio::status_internal_server_error())
                             .append_header(restinio::http_field::content_type, "text/plain; charset=utf-8")
                             .set_body("Error: You don't have enogh money!!")
                             .done();
@@ -719,8 +714,8 @@ int main(void) {
                             .done();
                     }
                     else {
-                        Logger("ServerLogger.txt", "DELETE /bet/:id 417");
-                        return req->create_response(restinio::status_expectation_failed())
+                        Logger("ServerLogger.txt", "DELETE /bet/:id 500");
+                        return req->create_response(restinio::status_internal_server_error())
                             .append_header(restinio::http_field::content_type, "text/plain; charset=utf-8")
                             .set_body("Error: Bet not deleted!!")
                             .done();
@@ -898,23 +893,23 @@ int main(void) {
                                 .done();
                         }
                         else {
-                            Logger("ServerLogger.txt", "POST /endedbet/ 417");
-                            return req->create_response(restinio::status_expectation_failed())
+                            Logger("ServerLogger.txt", "POST /endedbet/ 500");
+                            return req->create_response(restinio::status_internal_server_error())
                                 .append_header(restinio::http_field::content_type, "text/plain; charset=utf-8")
                                 .set_body("Error: Ended Bet not inserted!!")
                                 .done();
                         }
                     }
                     else {
-                        Logger("ServerLogger.txt", "POST /endedbet/ 201");
-                        return req->create_response(restinio::status_expectation_failed())
+                        Logger("ServerLogger.txt", "POST /endedbet/ 500");
+                        return req->create_response(restinio::status_internal_server_error())
                             .append_header(restinio::http_field::content_type, "text/plain; charset=utf-8")
                             .set_body("Error: This bet doesn't exist!!")
                             .done();
                     }
                 }
                 else {
-                    Logger("ServerLogger.txt", "POST /endedbet)401");
+                    Logger("ServerLogger.txt", "POST /endedbet 401");
                     return req->create_response(restinio::status_unauthorized())
                         .append_header(restinio::http_field::content_type, "text/plain; charset=utf-8")
                         .set_body("Non Autorizzato")
@@ -941,8 +936,8 @@ int main(void) {
                             .done();
                     }
                     else {
-                        Logger("ServerLogger.txt", "DELETE /endedbet/:id 417");
-                        return req->create_response(restinio::status_expectation_failed())
+                        Logger("ServerLogger.txt", "DELETE /endedbet/:id 500");
+                        return req->create_response(restinio::status_internal_server_error())
                             .append_header(restinio::http_field::content_type, "text/plain; charset=utf-8")
                             .set_body("Error: Ended Bet not deleted!!")
                             .done();

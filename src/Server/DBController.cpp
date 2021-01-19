@@ -6,9 +6,6 @@ Nardo Gabriele Salvatore O55000430
 */
 #include "DBController.h"
 
-#define SUCCESS 0
-#define FAILURE 1
-
 // Costructor and Distructor 
 DB_Controller::DB_Controller(const string uri, const string DB_name) {
 	this->actual_uri = uri;
@@ -35,7 +32,7 @@ void DB_Controller::SetDB(const mongocxx::database db) {
 
 
 // CRUD METHOD FOR USERS
-int DB_Controller::InsertUser(const User user) {
+int DB_Controller::InsertUser(const User& user) {
 	try {
 		bsoncxx::document::value user_doc = make_document(
 			kvp("name", user.name),
@@ -60,7 +57,7 @@ int DB_Controller::InsertUser(const User user) {
 	}
 }
 
-int DB_Controller::UpdateUser(const string user_id, const User user) {
+int DB_Controller::UpdateUser(const string& user_id, const User& user) {
 	try {
 		json res_user = FindUser(user_id);
 		if (res_user.contains("_id")){
@@ -98,7 +95,7 @@ int DB_Controller::UpdateUser(const string user_id, const User user) {
 	}
 }
 
-const json DB_Controller::FindUser(const string user_id) {
+const json DB_Controller::FindUser(const string& user_id) const {
 	try {
 		auto res = this->db["users"].find_one(make_document(kvp("_id", bsoncxx::types::b_oid{ bsoncxx::oid(user_id) })));
 		json j;
@@ -121,7 +118,7 @@ const json DB_Controller::FindUser(const string user_id) {
 	}
 }
 
-const json DB_Controller::FindUserByMailPass(const string mail, const string pass) {
+const json DB_Controller::FindUserByMailPass(const string& mail, const string& pass) const {
 	try {
 		auto res = this->db["users"].find_one(
 			make_document(
@@ -149,7 +146,7 @@ const json DB_Controller::FindUserByMailPass(const string mail, const string pas
 
 }
 
-const json DB_Controller::FindUsers() {
+const json DB_Controller::FindUsers() const {
 	try {
 		auto res = this->db["users"].find({});
 		json results;
@@ -165,7 +162,7 @@ const json DB_Controller::FindUsers() {
 	}
 }
 
-int  DB_Controller::DeleteUser(const string user_id) {
+int  DB_Controller::DeleteUser(const string& user_id) {
 	try {
 		auto res = this->db["users"].delete_one(make_document(kvp("_id", bsoncxx::types::b_oid{ bsoncxx::oid(user_id) })));
 		if (res->deleted_count() == 1) {
@@ -187,7 +184,7 @@ int  DB_Controller::DeleteUser(const string user_id) {
 	}
 }
 
-int DB_Controller::UpdateUserBalance(const string user_id, const float update_quantity) {
+int DB_Controller::UpdateUserBalance(const string& user_id, const float& update_quantity) {
 	try {
 		auto res = this->db["users"].find_one(make_document(kvp("_id", bsoncxx::types::b_oid{ bsoncxx::oid(user_id) })));
 		json j;
@@ -228,7 +225,7 @@ int DB_Controller::UpdateUserBalance(const string user_id, const float update_qu
 }
 
 // CRUD METHOD FOR EVENTS
-int DB_Controller::InsertEvent(const Event evento){
+int DB_Controller::InsertEvent(const Event& evento){
 	try {
 		bsoncxx::document::value event_doc = make_document(
 			kvp("name", evento.name),
@@ -278,7 +275,7 @@ int DB_Controller::InsertEvent(const Event evento){
 	}
 }
 
-int DB_Controller::UpdateEvent(const string event_id,const Event evento) {
+int DB_Controller::UpdateEvent(const string& event_id,const Event& evento) {
 	try {
 		auto res = this->db["events"].replace_one(
 			make_document(kvp("_id", bsoncxx::types::b_oid{ bsoncxx::oid(event_id) })),
@@ -329,7 +326,7 @@ int DB_Controller::UpdateEvent(const string event_id,const Event evento) {
 	}
 }
 
-const json DB_Controller::FindEvent(const string event_id) {
+const json DB_Controller::FindEvent(const string& event_id) const {
 	try {
 		auto res = this->db["events"].find_one(make_document(kvp("_id", bsoncxx::types::b_oid{ bsoncxx::oid(event_id) })));
 		json j;
@@ -352,7 +349,7 @@ const json DB_Controller::FindEvent(const string event_id) {
 	}
 }
 
-const json DB_Controller::FindEvents() {
+const json DB_Controller::FindEvents() const {
 	try {
 		auto res = this->db["events"].find({});
 		json results;
@@ -368,7 +365,7 @@ const json DB_Controller::FindEvents() {
 	}
 }
 
-int DB_Controller::DeleteEvent(const string  event_id) {
+int DB_Controller::DeleteEvent(const string& event_id) {
 	try {
 		auto res = this->db["events"].delete_one(make_document(kvp("_id", bsoncxx::types::b_oid{ bsoncxx::oid(event_id) })));
 		if (res->deleted_count() == 1) {
@@ -390,7 +387,7 @@ int DB_Controller::DeleteEvent(const string  event_id) {
 	}
 }
 
-int DB_Controller::DeleteEventOperation(const string event_id) {
+int DB_Controller::DeleteEventOperation(const string& event_id) {
 	try {
 		json search_res = this->FindBets();
 		int upd_odd_res = FAILURE; 
@@ -444,7 +441,7 @@ int DB_Controller::DeleteEventOperation(const string event_id) {
 }
 
 // CRUD METHOD FOR BET
-int DB_Controller::InsertBetOperation(const Bet bet) {
+int DB_Controller::InsertBetOperation(const Bet& bet) {
 	try {
 		int update_res = this->UpdateUserBalance(bet.user_id, -bet.betted_amount);
 		if (update_res == SUCCESS) {
@@ -473,7 +470,7 @@ int DB_Controller::InsertBetOperation(const Bet bet) {
 	}
 }
 
-int DB_Controller::InsertBet(const Bet bet) {
+int DB_Controller::InsertBet(const Bet& bet) {
 	try {
 		int size = sizeof(bet.event_outcomes) / sizeof(bet.event_outcomes[0]);
 
@@ -523,7 +520,7 @@ int DB_Controller::InsertBet(const Bet bet) {
 	}
 }
 
-int DB_Controller::UpdateBetOdd(const json bet, const string search_event_id) {
+int DB_Controller::UpdateBetOdd(const json& bet, const string& search_event_id) {
 	try {
 		bsoncxx::builder::basic::document basic_builder{};
 		float new_potential_win = bet["betted_amount"]; //init to old betted amount
@@ -586,7 +583,7 @@ int DB_Controller::UpdateBetOdd(const json bet, const string search_event_id) {
 	}
 }
 
-const json DB_Controller::FindBet(const string bet_id) {
+const json DB_Controller::FindBet(const string& bet_id) const {
 	try {
 		auto res = this->db["bets"].find_one(make_document(kvp("_id", bsoncxx::types::b_oid{ bsoncxx::oid(bet_id) })));
 		json j;
@@ -608,7 +605,7 @@ const json DB_Controller::FindBet(const string bet_id) {
 	}
 }
 
-const json DB_Controller::FindBets() {
+const json DB_Controller::FindBets() const {
 	try {
 		auto res = this->db["bets"].find({});
 		json results;
@@ -624,7 +621,7 @@ const json DB_Controller::FindBets() {
 	}
 }
 
-const json DB_Controller::FindBetsPerUser(const string user_id) {
+const json DB_Controller::FindBetsPerUser(const string& user_id) const {
 	try {
 		auto res = this->db["bets"].find(make_document(kvp("user_id", user_id)));
 		json results;
@@ -640,7 +637,7 @@ const json DB_Controller::FindBetsPerUser(const string user_id) {
 	}
 }
 
-int DB_Controller::DeleteBet(const string  bet_id) {
+int DB_Controller::DeleteBet(const string& bet_id) {
 	try {
 		auto res = this->db["bets"].delete_one(make_document(kvp("_id", bsoncxx::types::b_oid{ bsoncxx::oid(bet_id) })));
 		if (res->deleted_count() == 1) {
@@ -662,7 +659,7 @@ int DB_Controller::DeleteBet(const string  bet_id) {
 }
 
 // CRUD METHOD FOR WONBET
-int DB_Controller::InsertEndedBetOperation(const EndedBet ebet) {
+int DB_Controller::InsertEndedBetOperation(const EndedBet& ebet) {
 	try {
 		int insert_res = this->InsertEndedBet(ebet);
 		if (insert_res == SUCCESS) {
@@ -699,7 +696,7 @@ int DB_Controller::InsertEndedBetOperation(const EndedBet ebet) {
 	}
 }
 
-int DB_Controller::InsertEndedBet(const EndedBet ebet) {
+int DB_Controller::InsertEndedBet(const EndedBet& ebet) {
 	try {
 		bsoncxx::document::value ebet_doc = make_document(
 			kvp("user_id", ebet.user_id),
@@ -726,7 +723,7 @@ int DB_Controller::InsertEndedBet(const EndedBet ebet) {
 	}
 }
 
-const json DB_Controller::FindEndedBet(const string ebet_id) {
+const json DB_Controller::FindEndedBet(const string& ebet_id) const {
 	try {
 		auto res = this->db["ebets"].find_one(make_document(kvp("_id", bsoncxx::types::b_oid{ bsoncxx::oid(ebet_id) })));
 		json j;
@@ -748,7 +745,7 @@ const json DB_Controller::FindEndedBet(const string ebet_id) {
 	}
 }
 
-const json DB_Controller::FindWonBets() {
+const json DB_Controller::FindWonBets() const {
 	try {
 		auto res = this->db["ebets"].find(make_document(kvp("won", true)));
 		json results;
@@ -764,7 +761,7 @@ const json DB_Controller::FindWonBets() {
 	}
 }
 
-const json DB_Controller::FindWonBetsPerUser(const string user_id) {
+const json DB_Controller::FindWonBetsPerUser(const string& user_id) const {
 	try {
 		auto res = this->db["ebets"].find(make_document(kvp("user_id", user_id), kvp("won", true)));
 		json results;
@@ -780,7 +777,7 @@ const json DB_Controller::FindWonBetsPerUser(const string user_id) {
 	}
 }
 
-const json DB_Controller::FindLostBets() {
+const json DB_Controller::FindLostBets() const {
 	try {
 		auto res = this->db["ebets"].find(make_document(kvp("won", false)));
 		json results;
@@ -796,7 +793,7 @@ const json DB_Controller::FindLostBets() {
 	}
 }
 
-const json DB_Controller::FindLostBetsPerUser(const string user_id) {
+const json DB_Controller::FindLostBetsPerUser(const string& user_id) const {
 	try {
 		auto res = this->db["ebets"].find(make_document(kvp("user_id", user_id), kvp("won", false)));
 		json results;
@@ -812,7 +809,7 @@ const json DB_Controller::FindLostBetsPerUser(const string user_id) {
 	}
 }
 
-int DB_Controller::DeleteEndedBet(const string ebet_id) {
+int DB_Controller::DeleteEndedBet(const string& ebet_id) {
 	try {
 		auto res = this->db["ebets"].delete_one(make_document(kvp("_id", bsoncxx::types::b_oid{ bsoncxx::oid(ebet_id) })));
 		if (res->deleted_count() == 1) {

@@ -5,10 +5,21 @@
 library(mongolite)
 library(rjson)
 
+# Logger Function
+log_func <- function(call_info) {
+    conn <- file("./StatsServerLogger.txt","a")
+    msg <- c(paste(as.character(Sys.time()),call_info))
+    writeLines(msg, con = conn)
+    close(conn)
+}
+
+log_func("Stats Server Running at 127.0.0.1:9090")
+
 #* @param msg The message to echo
 #* @get /ping
 function(msg="pong") {
     list(msg = paste0("The message is: '", msg, "'"))
+    log_func("GET /ping 200")
 }
 
 #APIs to obtain User Stats
@@ -20,9 +31,11 @@ function(req,res) {
     temp <- as.data.frame(body)
     result <- user.stats$insert(temp)
     if(result$nInserted == 1){
+        log_func("POST /userststas 201")
         res$status <- 201
     } else {
-        res$status <- 417
+        log_func("POST /userststas 500")
+        res$status <- 500
     }
 }
 
@@ -30,6 +43,7 @@ function(req,res) {
 function(id) {
     user.stats <- mongo("userstats","SoccerBet")
     user.stats$remove(paste0('{"user_id" : "',id, '"}'))
+    log_func("DELETE /userstats/id 200")
 }
 
 
@@ -37,6 +51,7 @@ function(id) {
 function() {
     user.stats <- mongo("userstats","SoccerBet")
     user.data <- user.stats$find('{}')
+    log_func("GET /userstats 200")
     return(user.data)
 }
 
@@ -44,6 +59,7 @@ function() {
 function(id) {
     user.stats <- mongo("userstats","SoccerBet")
     user.data <- user.stats$find(paste0('{"user_id" : "',id, '"}'))
+    log_func("GET /userstats/id 200")
     return(user.data)
 }
 
@@ -68,6 +84,7 @@ function(id) {
     fill = c("green","red"))
     dev.off()
     
+    log_func("GET /userstats/id/piegrap 200")
     readBin(tmp, "raw", n=file.info(tmp)$size)
 }
 
@@ -92,6 +109,7 @@ function(id) {
     fill = c("red","green"))
     dev.off()
     
+    log_func("GET /userstats/id/bargrap 200")
     readBin(tmp, "raw", n=file.info(tmp)$size)
 }
 
@@ -102,9 +120,11 @@ function(id,req,res) {
     new.paid.money <- user.data$paid_money + req$body$paid_money
     result <- user.stats$update(paste0('{"user_id" : "',id, '"}'),paste0('{"$set":{"paid_money": ',new.paid.money,'}}'))
     if(result$modifiedCount == 1){
+        log_func("PUT /userstats/id/paid 200")
         res$status <- 200
     } else  {
-        res$status <- 417
+        log_func("PUT /userstats/id/paid 500")
+        res$status <- 500
     }  
 }
 #* @put /userstats/<id>/won
@@ -115,9 +135,11 @@ function(id,req,res) {
     new.num.wbet <- user.data$num_wbet + 1
     result <- user.stats$update(paste0('{"user_id" : "',id, '"}'),paste0('{"$set":{"won_money": ',new.won.money,'},"$set":{"num_wbet": ',new.num.wbet,'}}'))
     if(result$modifiedCount == 1){
+        log_func("PUT /userstats/id/won 200")
         res$status <- 200
     } else  {
-        res$status <- 417
+        log_func("PUT /userstats/id/won 500")
+        res$status <- 500
     }   
 }
 
@@ -128,9 +150,11 @@ function(id,res) {
     new.num.fbet <- user.data$num_fbet + 1
     result <- user.stats$update(paste0('{"user_id" : "',id, '"}'),paste0('{"$set":{"num_fbet": ',new.num.fbet,'}}'))
     if(result$modifiedCount == 1){
+        log_func("PUT /userstats/id/lose 200")
         res$status <- 200
     } else {
-        res$status <- 417
+        log_func("PUT /userstats/id/lose 500")
+        res$status <- 500
     }
 }
 
@@ -141,9 +165,11 @@ function(id,req,res){
     new.user.betted_amount <- user.data$betted_money + req$body$betted_money
     result <- user.stats$update(paste0('{"user_id" : "',id, '"}'),paste0('{"$set":{"betted_money": ',new.user.betted_amount,'}}'))
     if(result$modifiedCount == 1){
+        log_func("PUT /userstats/id/bet 500")
         res$status <- 200
     } else {
-        res$status <- 417
+        log_func("PUT /userstats/id/bet 500")
+        res$status <- 500
     }
 }
 
@@ -156,9 +182,11 @@ function(req,res) {
     temp <- as.data.frame(body)
     result <- sis.stats$insert(temp)
     if(result$nInserted == 1){
+        log_func("POST /sistemstats 201")
         res$status <- 201
     } else {
-        res$status <- 417
+        log_func("POST /sistemstats 500")
+        res$status <- 500
     }
 }
 
@@ -169,9 +197,11 @@ function(req,res){
     new.registered.users <- data$registered_users + 1
     result <- sis.stats$update('{}',paste0('{"$set":{"registered_users": ',new.registered.users,'}}'))
     if(result$modifiedCount == 1){
+        log_func("PUT /sistemstats/user/register 200")
         res$status <- 200
     } else {
-        res$status <- 417
+        log_func("PUT /sistemstats/user/register 500")
+        res$status <- 500
     }
 }
 
@@ -182,9 +212,11 @@ function(req,res){
     new.registered.users <- data$registered_users - 1
     result <- sis.stats$update('{}',paste0('{"$set":{"registered_users": ',new.registered.users,'}}'))
     if(result$modifiedCount == 1){
+        log_func("PUT /sistemstats/user/delete 200")
         res$status <- 200
     } else {
-        res$status <- 417
+        log_func("PUT /sistemstats/user/delete 500")
+        res$status <- 500
     }
 }
 
@@ -196,9 +228,11 @@ function(req,res){
     new.money.gained <- data$money_gained + req$body$money_gained
     result <- sis.stats$update('{}',paste0('{"$set":{"bet_count":',new.bet.count,'},"$set":{"money_gained":',new.money.gained,'}}'))
     if(result$modifiedCount == 1){
+        log_func("PUT /sistemstats/bet 200")
         res$status <- 200
     } else {
-        res$status <- 417
+        log_func("PUT /sistemstats/bet 500")
+        res$status <- 500
     }
 }
 
@@ -210,9 +244,11 @@ function(req,res){
     new.money.paid <- data$money_paid + req$body$money_paid
     result <- sis.stats$update('{}', paste0('{"$set":{"wbet_count":',new.wbet.count,'},"$set":{"money_paid": ',new.money.paid,'}}'))
     if(result$modifiedCount == 1){
+        log_func("PUT /sistemstats/wbet 200")
         res$status <- 200
     } else {
-        res$status <- 417
+        log_func("PUT /sistemstats/wbet 500")
+        res$status <- 500
     }
 }
 
@@ -223,9 +259,11 @@ function(req,res){
     new.fbet.count <- data$fbet_count + 1
     result <- sis.stats$update('{}',paste0('{"$set":{"fbet_count":',new.fbet.count,'}}'))
     if(result$modifiedCount == 1){
+        log_func("PUT /sistemstats/fbet 200")
         res$status <- 200
     } else {
-        res$status <- 417
+        log_func("PUT /sistemstats/fbet 500")
+        res$status <- 500
     }
 }
 
@@ -233,6 +271,7 @@ function(req,res){
 function(req) {
     sis.stats <- mongo("sistemstats","SoccerBet")
     alldata <- sis.stats$find(query= '{}',   limit = 1)
+    log_func("GET /sistemstats 200")
     return(alldata)
 }
 
@@ -240,6 +279,7 @@ function(req) {
 function(req) {
     sis.stats <- mongo("sistemstats","SoccerBet")
     sis.stats$drop()
+    log_func("DELETE /sistemstats 200")
 }
 
 #* @get /sistemstats/piegraph
@@ -263,6 +303,7 @@ function(id) {
     fill = c("green","red"))
     dev.off()
     
+    log_func("GET /sistemstats/piegraph 200")
     readBin(tmp, "raw", n=file.info(tmp)$size)
 }
 
@@ -286,5 +327,6 @@ function(id) {
     fill = c("red","green"))
     dev.off()
     
+    log_func("GET /sistemstats/bargraph 200")
     readBin(tmp, "raw", n=file.info(tmp)$size)
 }

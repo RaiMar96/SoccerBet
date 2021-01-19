@@ -8,7 +8,8 @@ import re
 
 def check_mail(email):
     mail_regEx = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
-    if(re.search(mail_regEx,email)):
+    rgx = re.compile(mail_regEx)
+    if(rgx.search(email)):
         return True, "Valid Email"
     else:
         return False, "Not a Valid Email"
@@ -37,31 +38,36 @@ def check_psw(psw):
         return False, outcome
 
 def check_name(name):
-    if re.search("^[A-Z]'?[- a-zA-Z]+$",name):
+    rgx = re.compile("^[A-Z]'?[- a-zA-Z]+$")
+    if rgx.search(name):
         return True, "Valid Name"
     else:
         return False, "Invalid Name"
 
 def check_surname(surname):
-    if re.search("^[A-Z]'?[- a-zA-Z]+$",surname):
+    rgx = re.compile("^[A-Z]'?[- a-zA-Z]+$")
+    if rgx.search(surname):
         return True, "Valid Surname"
     else:
         return False, "Invalid Surname"
 
 def check_balance(balance):
-    if re.search("^[+-]?[0-9]+\.?[0-9]*$",balance):
+    rgx = re.compile("^[+-]?[0-9]+\.?[0-9]*$")
+    if rgx.search(balance):
         return True, "Valid balance"
     else:
         return False, "Invalid balance"
 
 def check_odd(odd):
-    if re.search("^[0-9]+\.?[0-9]+$",odd):
+    rgx = re.compile("^[1-9]+\.?[0-9]+$")
+    if rgx.search(odd):
         return True, "Valid odd"
     else:
         return False, "Invalid odd"
 
 def check_eventName(event_name):
-    if re.search("^[A-Z]?[ a-zA-Z]+-{1}[A-Z]? *[ a-zA-Z]+$",event_name):
+    rgx = re.compile("^[A-Z]?[ a-zA-Z]+-{1}[A-Z]? *[ a-zA-Z]+$")
+    if rgx.search(event_name):
         return True, "Valid Event Name"
     else:
         return False, "Invalid Event Name"

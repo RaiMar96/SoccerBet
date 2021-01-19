@@ -13,6 +13,8 @@ import Stats_Rest_Requests as sts_req
 import FormValidator as valid
 import GuiTools
 import requests
+from collections import OrderedDict
+
 
 class SoccerBetUiController():
     def __init__(self):
@@ -860,7 +862,7 @@ class SoccerBetUiController():
 
     def setTableAdmin_getEvents(self, data):
         if(data != None):
-            self.horHeaders = ["Nome Evento", "Inizio", "Fine", "1", "2", "GG", "NG", "Over_2,5", "Under_2,5","X","Modifica","Elimina"]
+            self.horHeaders = ["Nome Evento", "Inizio", "Fine", "1","X", "2", "GG", "NG", "Over_2,5", "Under_2,5","Modifica","Elimina"]
             self.keys = ["name", "start_date", "end_date", "odds","Modifica","Elimina"]
             self.ui.AdminHome_EventInfos_tbl.setRowCount(0)
             self.ui.AdminHome_EventInfos_tbl.setColumnCount(12)
@@ -871,6 +873,16 @@ class SoccerBetUiController():
             self.ui.edit_btn = []
 
             for m in range(len(data)):
+                temp = {
+                    "1" : data[m]["odds"]["1"],
+                    "X" : data[m]["odds"]["X"],
+                    "2" : data[m]["odds"]["2"],
+                    "GG" : data[m]["odds"]["GG"],
+                    "NG" : data[m]["odds"]["NG"],
+                    "OVER_2,5" : data[m]["odds"]["OVER_2,5"],
+                    "UNDER_2,5" : data[m]["odds"]["UNDER_2,5"]
+                }
+                data[m]["odds"] = OrderedDict(temp)
                 self.event_ids.append(data[m]["_id"]["$oid"])
                 self.ui.AdminHome_EventInfos_tbl.insertRow(m)
                 for n, key in enumerate(self.keys):
@@ -898,7 +910,7 @@ class SoccerBetUiController():
                         self.ui.AdminHome_EventInfos_tbl.setItem(m, n, newitem)
                 
         else:
-            self.horHeaders = ["Nome Evento", "Inizio", "Fine", "1", "2", "GG", "NG", "Over_2,5", "Under_2,5","X","Modifica","Elimina"]
+            self.horHeaders = ["Nome Evento", "Inizio", "Fine", "1","X" "2", "GG", "NG", "Over_2,5", "Under_2,5","Modifica","Elimina"]
             self.ui.AdminHome_EventInfos_tbl.setRowCount(0)
             self.ui.AdminHome_EventInfos_tbl.setColumnCount(12)
             self.ui.AdminHome_EventInfos_tbl.setHorizontalHeaderLabels(self.horHeaders)
@@ -1116,7 +1128,7 @@ class SoccerBetUiController():
 
     def setTableUser_getEvents(self, data):
         if(data != None):
-            self.horHeaders = ["Nome Evento", "Inizio", "Fine", "1", "2", "GG", "NG", "Over_2,5", "Under_2,5","X"]
+            self.horHeaders = ["Nome Evento", "Inizio", "Fine", "1","X", "2", "GG", "NG", "Over_2,5", "Under_2,5"]
             self.keys = ["name", "start_date", "end_date", "odds"]
             self.ui.UserHomeEventInfos_tbl.setRowCount(0)
             self.ui.UserHomeEventInfos_tbl.setColumnCount(10)
@@ -1132,6 +1144,17 @@ class SoccerBetUiController():
             self.ui.oddUndr_btn = []
         
             for m in range(len(data)):
+                temp = {
+                    "1" : data[m]["odds"]["1"],
+                    "X" : data[m]["odds"]["X"],
+                    "2" : data[m]["odds"]["2"],
+                    "GG" : data[m]["odds"]["GG"],
+                    "NG" : data[m]["odds"]["NG"],
+                    "OVER_2,5" : data[m]["odds"]["OVER_2,5"],
+                    "UNDER_2,5" : data[m]["odds"]["UNDER_2,5"]
+                }
+                data[m]["odds"] = OrderedDict(temp)
+
                 self.ev_start_date = QtCore.QDateTime(QtCore.QDate(data[m]["start_date"]["year"], data[m]["start_date"]["month"], data[m]["start_date"]["day"]), QtCore.QTime(data[m]["start_date"]["hour"], data[m]["start_date"]["minute"], 0))
                 if(self.ev_start_date > QDateTime.currentDateTime()):
                     self.event_ids.append(data[m]["_id"]["$oid"])
@@ -1198,7 +1221,7 @@ class SoccerBetUiController():
                             self.ui.UserHomeEventInfos_tbl.setItem(m, n, newitem)
 
         else:
-            self.horHeaders = ["Nome Evento", "Inizio", "Fine", "1", "2", "GG", "NG", "Over_2,5", "Under_2,5","X"]
+            self.horHeaders = ["Nome Evento", "Inizio", "Fine", "1","X","2", "GG", "NG", "Over_2,5", "Under_2,5"]
             self.ui.UserHomeEventInfos_tbl.setRowCount(0)
             self.ui.UserHomeEventInfos_tbl.setColumnCount(10)
             self.ui.UserHomeEventInfos_tbl.setHorizontalHeaderLabels(self.horHeaders)

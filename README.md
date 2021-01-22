@@ -45,7 +45,7 @@ install.packages("rjson")
 Per quanto riguarda il Client è necessario installare la libreria __requests__ , __json__ usando pip.
 
 ## Avvio
-Prima di avviare l'applicazione assicurarsi che le porte 8080 , 9090 e 27017 siano dispobili perchè utuilizzate rispettivamente da Server , StatsServer e MongoDB.
+Prima di avviare l'applicazione assicurarsi che le porte 8080 , 9090 e 27017 siano disponibili perchè utilizzate rispettivamente da Server , StatsServer e MongoDB.
 
 - Avviare un'istanza di MongoDB sulla propria Macchina
 - Compilare e lanciare il RestServer ( aggiungere alle direttive di compilazione in Visual Studio la seguente macro **_CRT_SECURE_NO_WARNINGS** )
